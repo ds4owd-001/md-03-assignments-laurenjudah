@@ -1,7 +1,7 @@
 ---
 title: "Data transformation with dplyr"
 subtitle: "And make a plot"
-author: ""
+author: "Lauren Judah"
 format:
   html:
     embed-resources: true
@@ -47,6 +47,7 @@ sanitation <- read_csv("data/jmp_wld_sanitation_long.csv")
 3.  How many variables are in the data set?
 
 ```{r}
+glimpse(sanitation)
 
 ```
 
@@ -55,7 +56,8 @@ sanitation <- read_csv("data/jmp_wld_sanitation_long.csv")
 1.  Use the `count()` function with varname_short and varname_long to identify the definitions of the levels in these two variables.
 
 ```{r}
-
+sanitation |> 
+  count(varname_short, varname_long)
 ```
 
 ## Task 3
@@ -69,7 +71,10 @@ sanitation <- read_csv("data/jmp_wld_sanitation_long.csv")
 2.  Store the result as a new object in your environment with a name of your choice.
 
 ```{r}
-
+sanitation_per <- sanitation |> 
+  filter(iso3 == "PER",
+         year %in% c(2000, 2020), 
+         varname_short != "san_sm")
 ```
 
 ## Task 4
@@ -77,7 +82,8 @@ sanitation <- read_csv("data/jmp_wld_sanitation_long.csv")
 1.  Use the `count()` function with the data you created in Task 3 to verify that year 2000 and 2020 remained in the year variable.
 
 ```{r}
-
+sanitation_per |> 
+  count(year)
 ```
 
 ## Task 5
@@ -100,7 +106,17 @@ geom_text(aes(label = round(percent, 1)),
 ```
 
 ```{r}
-
+ggplot(data = sanitation_per,
+       mapping = aes(x = residence, 
+                     y = percent, 
+                     fill = varname_long)) +
+  geom_col() +
+  facet_wrap(~year) +
+  scale_fill_colorblind() +
+  geom_text(aes(label = round(percent, 1)), 
+            position = position_stack(vjust = 0.5),
+            size = 3,
+            color = "white") 
 ```
 
 ## Task 6
